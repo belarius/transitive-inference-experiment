@@ -10,26 +10,16 @@ dataHttp.send();
 dataList = dataHttp.responseText.split(",");
 
 // assign information to pictures A through E
-A = {filepath: "pics/0.jpg", id: dataList[2], rank: 0, correct: false};
-B = {filepath: "pics/1.jpg", id: dataList[3], rank: 1, correct: false};
-C = {filepath: "pics/2.jpg", id: dataList[4], rank: 2, correct: false};
-D = {filepath: "pics/3.jpg", id: dataList[5], rank: 3, correct: false};
-E = {filepath: "pics/4.jpg", id: dataList[6], rank: 4, correct: false};
+A = {filepath: "pics/red.spc", id: dataList[2], rank: 0, correct: true};
 
 
 subject_id = dataList[0];
-picture_array = [A, B, C, D, E];
+picture_array = [A];
 trial_number = Array();
-combination_array = Array();
 session_length = 0;
-for(i=0;i<5;i++){
-  for(j=0;j<5;j++){
-    if(i != j){
-      session_length = session_length + 1;
-      trial_number.push(session_length.toString());
-      combination_array.push([picture_array[i], picture_array[j]]);
-    }
-  }
+for(i=0;i<10;i++){
+  session_length = session_length + 1;
+  trial_number.push(session_length.toString());
 }
 
 // data collection arrays
@@ -46,7 +36,7 @@ var id_array = Array.apply(null, new Array(session_length)).map(String.prototype
 var current_trial = -1;
 var penaltyDelay = 0;
 var delay = 0;
-var feedback_delay = 700;
+var feedback_delay = 1500;
 
 console.log(trial_number);
 console.log(id_array);
@@ -59,43 +49,8 @@ newTrial()
 // runs through a single trial, picking a pair of images
 function newTrial(retry){
   current_trial = current_trial + 1;
-
-  if(retry != true){
-    // pulls a random combination from the array of combinations
-    var this_combination = Math.floor(Math.random()*combination_array.length);
-    var current_pair = combination_array[this_combination]
-  }
- if(combination_array.length == 0){
-    console.log("finished!");
-    printToServer();
-  }
-  trial_objects.push(current_pair);
   console.log(trial_objects);
-  combination_array.splice(this_combination, 1);
-  var index1 = Math.floor(Math.random()*2);
-  var index2;
-  if(index1 == 1){
-    index2 = 0;
-  }
-  else{
-    index2 = 1;
-  }
-  console.log(combination_array);
-
-  var stimulus_one = createStimulus(current_pair[index1]);
-  var stimulus_two = createStimulus(current_pair[index2]);
-
-
-
-  
-
-  // create ranking
-  if(current_pair[index1].rank < current_pair[index2].rank){
-    current_pair[index1].correct = true;
-  }
-  else{
-    current_pair[index2].correct = true;
-  }
+  var stimulus_one = createStimulus(picture_array[0]);
 }
 
 function checkClicked(source){
@@ -125,21 +80,11 @@ function createStimulus(image_object){
       var event_time = new Date().getTime();
       result_time[current_trial] = event_time;
       image_object.class = "clicked";
-      if(event_time - creation_time <= 10000){
-        giveResult(image_object, true);
-      }
-      else{
-        giveResult(image_object, false);
-      }
+      giveResult(image_object, true);
     });
     if(current_trial != 0){
       setTimeout(function(){checkClicked(stimulus.src)}, 10000)
     }
-    
-
-    //stimulus.addEventListener('touchstart', function(){
-    // giveResult(image_object);
-    //})
     return stimulus;
 }
 
@@ -175,22 +120,6 @@ function giveResult(image, action_taken){
   }
 }
 
-// clears html document of image objects
-function resetVars(newTrialBool){
-  var selection = document.getElementsByTagName('img');
-  for(i=0;i <= selection.length;i++){
-    selection[0].parentNode.removeChild(selection[0]);
-  }
-  for(i=0;i<5;i++){
-    picture_array[i].correct = false;
-    picture_array[i].class = "unclicked";
-  }
-  if(newTrialBool){
-    // wait a second for next trial
-    newTrial();
-  }
-}
-
 // present image to re-orientate participant
 function presentInterTrial(timeout){
   if(typeof timeout == 'undefined'){
@@ -205,37 +134,30 @@ function presentInterTrial(timeout){
     else if (trial_result[current_trial] == "1"){
       interImg.src = "pics/check.spc" + new Date().getTime();
     }
+  
     document.body.appendChild(interImg);
     setTimeout(function(){
-    resetVars(false)
-      setTimeout(function(){
-      var orientImg = document.createElement('img');
-      orientImg.width = 150;
-      orientImg.height = 150;
-      orientImg.style.paddingLeft = "325px";
-      orientImg.style.paddingTop = "50px" ;
-      orientImg.src = "pics/bluesq.spc" + new Date().getTime();
-      setTimeout(function(){document.body.appendChild(orientImg)}, 300);
-      orientImg.addEventListener('click', function(e){
-        resetVars(true);
-        });
-      }, delay);
+         resetVars(true)
     }, feedback_delay);
   }
   else if (timeout){
-    var orientImg = document.createElement('img');
-    orientImg.width = 150;
-    orientImg.height = 150;
-    orientImg.style.paddingLeft = "325px";
-    orientImg.style.paddingTop = "50px" ;
-    orientImg.src = "pics/bluesq.spc" + new Date().getTime();
-    setTimeout(function(){document.body.appendChild(orientImg)}, 300);
-    orientImg.addEventListener('click', function(e){
-      resetVars(true);
-    });
+    resetVars(true)
   }
+}
 
+// clears html document of image objects
+function resetVars(newTrialBool){
+  var selection = document.getElementsByTagName('img');
+  for(i=0;i <= selection.length;i++){
+    selection[0].parentNode.removeChild(selection[0]);
   }
+  picture_array[0].correct = true;
+  picture_array[0].class = "unclicked";
+  if(newTrialBool){
+    // wait a second for next trial
+    newTrial();
+  }
+}
 
 function printToServer(){
   print_string = "";
