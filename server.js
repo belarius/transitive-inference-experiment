@@ -89,7 +89,9 @@ var server = http.createServer( function(req, res) {
             if(exists) {
                 console.log("Serving file: " + localPath);
                 console.log('localPath: ' + localPath);
-                if(filename === pictureFolder + "/check.spc"){
+                console.log('filename: ' + filename);
+                console.log('check: ' + "." + pictureFolder + "/check.spc")
+                if("." + filename === pictureFolder + "/check.spc"){
                     //console.log("file true!");
                     goArduino();
                 };
@@ -272,8 +274,6 @@ board.on("ready", function(){
       this.pinMode(LEDPIN, OUTPUT);
 
     });
-
-    
 
 function goArduino(){
     //console.log('got here')
