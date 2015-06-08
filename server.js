@@ -88,9 +88,6 @@ var server = http.createServer( function(req, res) {
         fs.exists(localPath, function(exists) {
             if(exists) {
                 console.log("Serving file: " + localPath);
-                console.log('localPath: ' + localPath);
-                console.log('filename: ' + filename);
-                console.log('check: ' + "." + pictureFolder + "/check.spc")
                 if("." + filename === pictureFolder + "/check.spc"){
                     //console.log("file true!");
                     goArduino();
@@ -267,7 +264,7 @@ var board = new j5.Board();
 var LEDPIN = 13;
 var OUTPUT = 1;
 var val = 0;
-var pulseDuration = 1000;
+var pulseDuration = 100;
 board.on("ready", function(){
       // Set pin 13 to OUTPUT mode
 
