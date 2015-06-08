@@ -42,6 +42,12 @@ console.log(trial_number);
 console.log(id_array);
 console.log(trial_timeouts)
 
+// keyboard event listener
+
+var keypressing = false;
+//document.addEventListener('keydown', alert('Hello world!'), false);
+document.addEventListener('keyup', function(ev) {return onkey(ev, ev.keyCode, false); }, false);
+
 // put images in document body
 newTrial()
 
@@ -62,20 +68,40 @@ function checkClicked(source){
   }
 }
 
+function onkey(ev, key, pressed){
+  switch(key){
+    case 32:
+      trial_result[current_trial] = "2";
+      console.log(trial_result);
+      resetVars(false);
+      delay = 0;
+      presentInterTrial();
+      ev.preventDefault();
+      break;
+  }
+}
 
 // creates the stimulus
 function createStimulus(image_object){
   var stimulus = document.createElement('img');
     stimulus.id = image_object.id;
     stimulus.src = image_object.filepath + new Date().getTime();
-    stimulus.width = 250;
-    stimulus.height = 250;
+    stimulus.width = 350;
+    stimulus.height = 350;
     stimulus.class = "unclicked";
+    stimulus.draggable = "false";
     document.body.appendChild(stimulus);
     stim_time[current_trial] = new Date().getTime();
     var creation_time = new Date().getTime();
     // once image is clicked, experiment result is recorded and next trial starts
-    stimulus.addEventListener('click', function(e){
+    stimulus.addEventListener('touchstart', function(e){
+      getCoords(e, current_trial);
+      var event_time = new Date().getTime();
+      result_time[current_trial] = event_time;
+      image_object.class = "clicked";
+      giveResult(image_object, true);
+    });
+    stimulus.addEventListener('mousedown', function(e){
       getCoords(e, current_trial);
       var event_time = new Date().getTime();
       result_time[current_trial] = event_time;
@@ -87,6 +113,8 @@ function createStimulus(image_object){
     }
     return stimulus;
 }
+
+
 
 // records experiment, instigates new trial
 function giveResult(image, action_taken){
@@ -124,14 +152,14 @@ function giveResult(image, action_taken){
 function presentInterTrial(timeout){
   if(typeof timeout == 'undefined'){
     var interImg = document.createElement('img');
-    interImg.width = 150;
-    interImg.height = 150;
+    interImg.width = 200;
+    interImg.height = 200;
     interImg.style.paddingLeft = "325px";
     interImg.style.paddingTop = "50px" ;
     if(trial_result[current_trial] === "0"){
       interImg.src = "pics/ex.spc" + new Date().getTime();
     }
-    else if (trial_result[current_trial] == "1"){
+    else if (trial_result[current_trial] == "1" || trial_result[current_trial] == "2" ){
       interImg.src = "pics/check.spc" + new Date().getTime();
     }
   
