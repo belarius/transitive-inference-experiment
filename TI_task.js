@@ -2,6 +2,14 @@
 // client-side
 // Brendon Villalobos
 
+var listLength = 5;
+var blockCount = 10;
+var timeoutInterval = 10000;
+
+var w = window.innerWidth;
+var h = window.innerHeight;
+
+
 // gather preliminary data from server-side 
 // (which pictures to use and subject id)
 var dataHttp = new XMLHttpRequest();
@@ -20,15 +28,23 @@ E = {filepath: "pics/4.jpg", id: dataList[6], rank: 4, correct: false};
 subject_id = dataList[0];
 picture_array = [A, B, C, D, E];
 trial_number = Array();
-combination_array = Array();
 session_length = 0;
-for(i=0;i<5;i++){
-  for(j=0;j<5;j++){
-    if(i != j){
-      session_length = session_length + 1;
-      trial_number.push(session_length.toString());
-      combination_array.push([picture_array[i], picture_array[j]]);
+
+combination_array = Array();
+for(b=0;b<blockCount;b++){
+  temp_array = Array();
+  for(i=0;i<5;i++){
+    for(j=0;j<5;j++){
+      if(i != j){
+        session_length = session_length + 1;
+        trial_number.push(session_length.toString());
+        temp_array.push([picture_array[i], picture_array[j]]);
+      }
     }
+  }
+  shuffle(temp_array);
+  for(i=0;i<temp_array.length;i++){
+    combination_array.push(temp_array[i]);
   }
 }
 
@@ -58,6 +74,8 @@ newTrial()
 
 // runs through a single trial, picking a pair of images
 function newTrial(retry){
+  w = window.innerWidth;
+  h = window.innerHeight;
   current_trial = current_trial + 1;
 
   if(retry != true){
@@ -65,7 +83,7 @@ function newTrial(retry){
     var this_combination = Math.floor(Math.random()*combination_array.length);
     var current_pair = combination_array[this_combination]
   }
- if(combination_array.length == 0){
+  if(combination_array.length == 0){
     console.log("finished!");
     printToServer();
   }
@@ -82,14 +100,10 @@ function newTrial(retry){
   }
   console.log(combination_array);
 
-  var stimulus_one = createStimulus(current_pair[index1]);
-  var stimulus_two = createStimulus(current_pair[index2]);
+  var stimulus_one = createStimulus(current_pair[index1], 0.25, 0.5);
+  var stimulus_two = createStimulus(current_pair[index2], 0.75, 0.5);
 
-
-
-  
-
-  // create ranking
+// create ranking
   if(current_pair[index1].rank < current_pair[index2].rank){
     current_pair[index1].correct = true;
   }
@@ -109,38 +123,36 @@ function checkClicked(source){
 
 
 // creates the stimulus
-function createStimulus(image_object){
+function createStimulus(image_object, relX, relY){
   var stimulus = document.createElement('img');
-    stimulus.id = image_object.id;
-    stimulus.src = image_object.filepath + new Date().getTime();
-    stimulus.width = 250;
-    stimulus.height = 250;
-    stimulus.class = "unclicked";
-    document.body.appendChild(stimulus);
-    stim_time[current_trial] = new Date().getTime();
-    var creation_time = new Date().getTime();
-    // once image is clicked, experiment result is recorded and next trial starts
-    stimulus.addEventListener('click', function(e){
-      getCoords(e, current_trial);
-      var event_time = new Date().getTime();
-      result_time[current_trial] = event_time;
-      image_object.class = "clicked";
-      if(event_time - creation_time <= 10000){
-        giveResult(image_object, true);
-      }
-      else{
-        giveResult(image_object, false);
-      }
-    });
-    if(current_trial != 0){
-      setTimeout(function(){checkClicked(stimulus.src)}, 10000)
-    }
-    
-
-    //stimulus.addEventListener('touchstart', function(){
-    // giveResult(image_object);
-    //})
-    return stimulus;
+  stimulus.id = image_object.id;
+  stimulus.src = image_object.filepath + new Date().getTime();
+  stimulus.width = 350;
+  stimulus.height = 350;
+  stimulus.style.left = (Math.floor(w*relX) - Math.floor(0.5*stimulus.width)) + "px";
+  stimulus.style.top = (Math.floor(h*relY) - Math.floor(0.5*stimulus.height)) + "px";
+  stimulus.style.position = "absolute";
+  stimulus.class = "unclicked";
+  document.body.appendChild(stimulus);
+  stim_time[current_trial] = new Date().getTime();
+  var creation_time = new Date().getTime();
+  setTimeout(function(){giveResult(image_object, false);}, timeoutInterval)
+  // once image is clicked, experiment result is recorded and next trial starts
+  stimulus.addEventListener('touchstart', function(e){
+    getCoords(e, current_trial);
+    var event_time = new Date().getTime();
+    result_time[current_trial] = event_time;
+    image_object.class = "clicked";
+    giveResult(image_object, true);
+  });
+  stimulus.addEventListener('mousedown', function(e){
+    getCoords(e, current_trial);
+    var event_time = new Date().getTime();
+    result_time[current_trial] = event_time;
+    image_object.class = "clicked";
+    giveResult(image_object, true);
+  });
+return stimulus;
 }
 
 // records experiment, instigates new trial
@@ -195,10 +207,11 @@ function resetVars(newTrialBool){
 function presentInterTrial(timeout){
   if(typeof timeout == 'undefined'){
     var interImg = document.createElement('img');
-    interImg.width = 150;
-    interImg.height = 150;
-    interImg.style.paddingLeft = "325px";
-    interImg.style.paddingTop = "50px" ;
+    interImg.width = 200;
+    interImg.height = 200;
+    interImg.style.left = (Math.floor(w/2) - Math.floor(0.5*interImg.width)) + "px";
+    interImg.style.top = (Math.floor(h/2) - Math.floor(0.5*interImg.height)) + "px";
+    interImg.style.position = "absolute";
     if(trial_result[current_trial] === "0"){
       interImg.src = "pics/ex.spc" + new Date().getTime();
     }
@@ -207,35 +220,36 @@ function presentInterTrial(timeout){
     }
     document.body.appendChild(interImg);
     setTimeout(function(){
-    resetVars(false)
+      resetVars(false)
       setTimeout(function(){
-      var orientImg = document.createElement('img');
-      orientImg.width = 150;
-      orientImg.height = 150;
-      orientImg.style.paddingLeft = "325px";
-      orientImg.style.paddingTop = "50px" ;
-      orientImg.src = "pics/bluesq.spc" + new Date().getTime();
-      setTimeout(function(){document.body.appendChild(orientImg)}, 300);
-      orientImg.addEventListener('click', function(e){
-        resetVars(true);
+        var orientImg = document.createElement('img');
+        orientImg.width = 200;
+        orientImg.height = 200;
+        orientImg.style.left = (Math.floor(w/2) - Math.floor(0.5*orientImg.width)) + "px";
+        orientImg.style.top = (Math.floor(h/2) - Math.floor(0.5*orientImg.height)) + "px";
+        orientImg.style.position = "absolute";
+        orientImg.src = "pics/blue.spc" + new Date().getTime();
+        setTimeout(function(){document.body.appendChild(orientImg)}, 300);
+        orientImg.addEventListener('click', function(e){
+          resetVars(true);
         });
       }, delay);
     }, feedback_delay);
   }
   else if (timeout){
     var orientImg = document.createElement('img');
-    orientImg.width = 150;
-    orientImg.height = 150;
-    orientImg.style.paddingLeft = "325px";
-    orientImg.style.paddingTop = "50px" ;
-    orientImg.src = "pics/bluesq.spc" + new Date().getTime();
+    orientImg.width = 200;
+    orientImg.height = 200;
+    orientImg.style.left = (Math.floor(w/2) - Math.floor(0.5*orientImg.width)) + "px";
+    orientImg.style.top = (Math.floor(h/2) - Math.floor(0.5*orientImg.height)) + "px";
+    orientImg.style.position = "absolute";
+    orientImg.src = "pics/blue.spc" + new Date().getTime();
     setTimeout(function(){document.body.appendChild(orientImg)}, 300);
     orientImg.addEventListener('click', function(e){
       resetVars(true);
     });
   }
-
-  }
+}
 
 function printToServer(){
   print_string = "";
@@ -260,11 +274,17 @@ function printToServer(){
     xmlhttp.open("POST", print_string + ".sav" ,true);
   }
   xmlhttp.send();
-  }
+}
 
 function getCoords(e, current_trial){
-    var cursorX = e.clientX;
-    var cursorY = e.clientY;
-    result_x[current_trial] = cursorX; 
-    result_y[current_trial] = cursorY;
+  var cursorX = e.clientX;
+  var cursorY = e.clientY;
+  result_x[current_trial] = cursorX; 
+  result_y[current_trial] = cursorY;
 }
+
+function shuffle(o){ 
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+                                                    
