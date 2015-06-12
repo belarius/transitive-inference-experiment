@@ -9,6 +9,9 @@ dataHttp.open("GET", "info.dat", false);
 dataHttp.send();
 dataList = dataHttp.responseText.split(",");
 
+var w = window.innerWidth;
+var h = window.innerHeight;
+
 // assign information to pictures A through E
 A = {filepath: "pics/red.spc", id: dataList[2], rank: 0, correct: true};
 
@@ -54,9 +57,11 @@ newTrial()
 
 // runs through a single trial, picking a pair of images
 function newTrial(retry){
+  w = window.innerWidth;
+  h = window.innerHeight;
   current_trial = current_trial + 1;
   console.log(trial_objects);
-  var stimulus_one = createStimulus(picture_array[0]);
+  var stimulus_one = createStimulus(picture_array[0], 0.5 + Math.random()*0.5 - 0.25, 0.5 + Math.random()*0.5 - 0.25);
 }
 
 function checkClicked(source){
@@ -82,36 +87,35 @@ function onkey(ev, key, pressed){
 }
 
 // creates the stimulus
-function createStimulus(image_object){
+function createStimulus(image_object, relX, relY){
   var stimulus = document.createElement('img');
-    stimulus.id = image_object.id;
-    stimulus.src = image_object.filepath + new Date().getTime();
-    stimulus.width = 350;
-    stimulus.height = 350;
-    stimulus.class = "unclicked";
-    stimulus.draggable = "false";
-    document.body.appendChild(stimulus);
-    stim_time[current_trial] = new Date().getTime();
-    var creation_time = new Date().getTime();
-    // once image is clicked, experiment result is recorded and next trial starts
-    stimulus.addEventListener('touchstart', function(e){
-      getCoords(e, current_trial);
-      var event_time = new Date().getTime();
-      result_time[current_trial] = event_time;
-      image_object.class = "clicked";
-      giveResult(image_object, true);
-    });
-    stimulus.addEventListener('mousedown', function(e){
-      getCoords(e, current_trial);
-      var event_time = new Date().getTime();
-      result_time[current_trial] = event_time;
-      image_object.class = "clicked";
-      giveResult(image_object, true);
-    });
-    if(current_trial != 0){
-      setTimeout(function(){checkClicked(stimulus.src)}, 10000)
-    }
-    return stimulus;
+  stimulus.id = image_object.id;
+  stimulus.src = image_object.filepath + new Date().getTime();
+  stimulus.width = 350;
+  stimulus.height = 350;
+  stimulus.style.left = (Math.floor(w*relX) - Math.floor(0.5*stimulus.width)) + "px";
+  stimulus.style.top = (Math.floor(h*relY) - Math.floor(0.5*stimulus.height)) + "px";
+  stimulus.style.position = "absolute";
+  stimulus.class = "unclicked";
+  document.body.appendChild(stimulus);
+  stim_time[current_trial] = new Date().getTime();
+  var creation_time = new Date().getTime();
+  // once image is clicked, experiment result is recorded and next trial starts
+  stimulus.addEventListener('touchstart', function(e){
+    getCoords(e, current_trial);
+    var event_time = new Date().getTime();
+    result_time[current_trial] = event_time;
+    image_object.class = "clicked";
+    giveResult(image_object, true);
+  });
+  stimulus.addEventListener('mousedown', function(e){
+    getCoords(e, current_trial);
+    var event_time = new Date().getTime();
+    result_time[current_trial] = event_time;
+    image_object.class = "clicked";
+    giveResult(image_object, true);
+  });
+return stimulus;
 }
 
 
@@ -154,18 +158,18 @@ function presentInterTrial(timeout){
     var interImg = document.createElement('img');
     interImg.width = 200;
     interImg.height = 200;
-    interImg.style.paddingLeft = "325px";
-    interImg.style.paddingTop = "50px" ;
+    interImg.style.left = (Math.floor(w/2) - Math.floor(0.5*interImg.width)) + "px";
+    interImg.style.top = (Math.floor(h/2) - Math.floor(0.5*interImg.height)) + "px";
+    interImg.style.position = "absolute";
     if(trial_result[current_trial] === "0"){
       interImg.src = "pics/ex.spc" + new Date().getTime();
     }
-    else if (trial_result[current_trial] == "1" || trial_result[current_trial] == "2" ){
+    else if (trial_result[current_trial] == "1"){
       interImg.src = "pics/check.spc" + new Date().getTime();
     }
-  
     document.body.appendChild(interImg);
     setTimeout(function(){
-         resetVars(true)
+      resetVars(true)
     }, feedback_delay);
   }
   else if (timeout){
