@@ -6,7 +6,6 @@
 // ====VARIABLE DECLARATION====
 // ============================
 
-
 // ====Task Variables====
 var listLength = 5;
 var blockCount = 100;
@@ -46,7 +45,7 @@ var interTrialTimer = 0;
 
 // ====Server Query===
 var dataHttp = new XMLHttpRequest();
-dataHttp.open("GET", "info.dat", false);
+dataHttp.open("POST", "info.dat", false);
 dataHttp.send();
 dataList = dataHttp.responseText.split(",");
 // Assign subject ID
@@ -56,6 +55,7 @@ var picture_array = Array();
 for(i=0;i<listLength;i++){
   pth = "pics/" + i + ".jpg";
   A = {filepath: pth, id: dataList[i+2], rank: i, correct: false};
+  console.log(dataList[i+2])
   picture_array.push(A);
 }
 
@@ -89,9 +89,7 @@ timeout_time = Array.apply(null, new Array(session_length)).map(String.prototype
 interTrial_timeouts = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"0");
 id_array = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,subject_id);
 
-console.log(trial_number);
-console.log(id_array);
-console.log(trial_timeouts)
+console.log(session_length + " trials");
 
 // ====Begin Task====
 createTrialStarter()
@@ -151,20 +149,19 @@ function newTrial(){
   }
   document.getElementById("debug").innerHTML = counta/(counta+countb);
   current_pair = combination_array[current_trial];
-  trial_objects.push(current_pair);
-  console.log(trial_objects);
-  console.log(combination_array);
+  console.log(current_pair[0].rank + " vs. " + current_pair[1].rank);
   // create stimuli
   var stimulus_one = createStimulus(current_pair[0], 0.25, 0.5);
   var stimulus_two = createStimulus(current_pair[1], 0.75, 0.5);
   // specify ranking
   current_pair[0].correct = (current_pair[0].rank < current_pair[1].rank);
   current_pair[1].correct = (current_pair[1].rank < current_pair[0].rank);
-  endAndStartTimer(responseTimer, timeoutInterval, function(){giveResult(image_object, false);});
+  // store pairing
+  trial_objects.push(current_pair);
 }
 
 function createStimulus(image_object, relX, relY){
-// creates the stimulus
+  // creates the stimulus
   var stimulus = document.createElement('img');
   stimulus.id = image_object.id;
   stimulus.src = image_object.filepath;// + new Date().getTime();
@@ -199,48 +196,33 @@ function stimTouched(e, image_object, is_touch){
 function giveResult(image, action_taken){
   // records experiment, instigates new trial
   var stimulus = document.getElementById(image.id);
-  console.log(trial_result);
   if(action_taken){
-    if(image.correct){
-      // if participant selects correct image
-      trial_result[current_trial] = "1";
-      delay = 0;
-    }
-    // incorrect image
-    else {
-      trial_result[current_trial] = "0";
-      delay = penaltyDelay;
-    }
-    resetVars(false);
-    presentInterTrial();
-  }
-  else{
-    timeout_time[current_trial] = new Date().getTime();
-    trial_result[current_trial] = "-1";
-    resetVars(false);
-    delay = 0;
-    presentInterTrial(true);
-  }
-}
-
-function presentInterTrial(timeout){
-  // present image to re-orientate participant
-  if(typeof timeout == 'undefined'){
     var interImg = document.createElement('img');
     interImg.width = 200;
     interImg.height = 200;
     interImg.style.left = (Math.floor(w/2) - Math.floor(0.5*interImg.width)) + "px";
     interImg.style.top = (Math.floor(h/2) - Math.floor(0.5*interImg.height)) + "px";
     interImg.style.position = "absolute";
-    if(trial_result[current_trial] === "0"){
-      interImg.src = "pics/ex.spc";// + new Date().getTime();
-    }
-    else if (trial_result[current_trial] == "1"){
+    if(image.correct){
+      // if participant selects correct image
+      trial_result[current_trial] = "1";
+      console.log("Correct");
+      delay = 0;
       interImg.src = "pics/check.spc";// + new Date().getTime();
-      dataHttp.open("GET", "give.rwd", false);
+      dataHttp.open("GET", Math.random() + ".rwd", true);
       dataHttp.send();
+	  var confirmed = dataHttp.responseText;
     }
+    // incorrect image
+    else {
+      interImg.src = "pics/ex.spc";// + new Date().getTime();
+      trial_result[current_trial] = "0";
+      console.log("Incorrect");
+      delay = penaltyDelay;
+    }
+    resetVars(false);
     document.body.appendChild(interImg);
+    printToServer(current_trial);
     endAndStartTimer(rewardDeliveryTimer, feedback_delay, function(){
       resetVars(false)
       endAndStartTimer(penaltyTimer, delay, function(){
@@ -248,10 +230,15 @@ function presentInterTrial(timeout){
       });
     });
   }
-  else if (timeout){
+  else{
+    timeout_time[current_trial] = new Date().getTime();
+    trial_result[current_trial] = "-1";
+    console.log("Timeout");
+    printToServer(current_trial);
+    resetVars(false);
+    delay = 0;
     var trial_starter = createTrialStarter();
   }
-  printToServer(current_trial);
 }
 
 // ====Operational Functions====
@@ -313,6 +300,7 @@ function printToServer(trial_id){
   print_string += trial_objects[trial_id][0].id + ",";
   print_string += trial_objects[trial_id][1].id;
   print_string += ";";
-  xmlhttp.open("POST", print_string + ".sav" ,true);
+  xmlhttp.open("GET", print_string + ".sav" ,true);
   xmlhttp.send();
+  var confirmed = xmlhttp.responseText;
 }                                                    
