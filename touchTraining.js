@@ -16,6 +16,7 @@ var feedback_delay = 700;
 var w = window.innerWidth;
 var h = window.innerHeight;
 var dataHttp = new XMLHttpRequest();
+var keypressing = false;
 
 // ====Timers====
 var responseTimer = 0;
@@ -31,6 +32,7 @@ pth = "pics/red.spc";
 A = {filepath: pth, id: "red", rank: 1, correct: true};
 var picture_array = Array();
 picture_array.push(A);
+document.addEventListener('keyup', function(ev) {return onkey(ev, ev.keyCode, false); }, false);
 
 // ====Begin Task====
 newTrial();
@@ -136,11 +138,6 @@ function giveResult(image, action_taken){
 
 // ====Operational Functions====
 
-function endAndStartTimer(id, interval, fun){
-  window.clearTimeout(id)
-  id = window.setTimeout(fun, interval)
-}
-
 function checkClicked(source){
   var selection = document.getElementsByTagName('img');
   if(selection.length > 1 && (selection[0].src == source || selection[1].src == source)){
@@ -148,6 +145,11 @@ function checkClicked(source){
       selection[0].click();
     }
   }
+}
+
+function endAndStartTimer(id, interval, fun){
+  window.clearTimeout(id)
+  id = window.setTimeout(fun, interval)
 }
 
 function getTouchCoords(e){
@@ -161,6 +163,18 @@ function getMouseCoords(e){
   var cursorX = parseInt(e.clientX);
   var cursorY = parseInt(e.clientY);
 //  document.getElementById("XY").innerHTML = cursorX + " , " + cursorY;
+}
+
+function onkey(ev, key, pressed){
+  switch(key){
+    case 32:
+      console.log("Keyboard reward");
+      delay = 0;
+      var dummy = picture_array[0];
+      giveResult(dummy, true);
+      ev.preventDefault();
+      break;
+  }
 }
 
 function shuffle(o){ 
