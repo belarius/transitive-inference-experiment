@@ -69,6 +69,7 @@ var server = http.createServer( function(req, res) {
     ".dat": "text/data",
     ".spc": "image/special",
     ".wav": "sound",
+    ".ogg": "sound",
     ".rwd": "reward delivery command"
   };
   var isValidExt = validExtensions[ext];
@@ -96,6 +97,10 @@ var server = http.createServer( function(req, res) {
       else if(path.extname(filename) === ".dat"){
         var toSend = [subjectID, random, picArray].toString();
         res.end(toSend);
+      }
+      else if(path.extname(filename) === ".wav" || path.extname(filename) === ".ogg"){
+        console.log("Serving file: " + localPath);
+        getFile(localPath, res, ext); 
       }
       else if(path.extname(filename) !== ".sav" && !isNaN(filename.substring(6,7))){
         getFile(pictureFolder +"/" + picArray[parseInt(filename.substring(6,7))], res, ext);

@@ -102,6 +102,16 @@ createTrialStarter()
 // ====Task Functions====
 
 function createTrialStarter(){
+  current_trial = current_trial + 1;
+  if(current_trial==session_length){
+    console.log(current_trial + " , " + session_length);
+    document.getElementById('louis').play();
+    document.getElementById('louis').addEventListener('ended', function(){
+      this.currentTime = 0;
+      this.play();
+    }, false);
+
+  } else {
     var orientImg = document.createElement('img');
     orientImg.width = 200;
     orientImg.height = 200;
@@ -113,6 +123,7 @@ function createTrialStarter(){
     orientImg.addEventListener('touchstart', function(e){ resetVars(true); });
     orientImg.addEventListener('mousedown', function(e){ resetVars(true); });
     return orientImg;
+  }
 }
 
 function resetVars(newTrialBool){
@@ -121,7 +132,7 @@ function resetVars(newTrialBool){
   for(i=0;i <= selection.length;i++){
     selection[0].parentNode.removeChild(selection[0]);
   }
-  for(i=0;i<5;i++){
+  for(i=0;i<listLength;i++){
     picture_array[i].correct = false;
     picture_array[i].class = "unclicked";
   }
@@ -139,7 +150,6 @@ function newTrial(){
   // runs through a single trial, picking a pair of images
   w = window.innerWidth;
   h = window.innerHeight;
-  current_trial = current_trial + 1;
 
   //  Accuracy to up to this trial
   counta = 0; countb = 0;
