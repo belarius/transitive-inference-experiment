@@ -11,6 +11,7 @@ var path = require("path");
 var fs = require("fs");
 var args = process.argv.slice(2);
 var random = false;
+var cntrl = "none";
 var strainID, subjectID, picArray, needNew;
 validation();
 var outputFile;
@@ -22,6 +23,7 @@ var fileList = fs.readdirSync(pictureFolder);
 if(random){
   fileList = shuffle(fileList);
 }
+
 function newList(){
   picArray = Array();
   outputFile = folder + "/" + strainID + "-" + subjectID + "-" + makeDate() + ".csv"
@@ -30,9 +32,9 @@ function newList(){
       console.log("Picture file exhausted. Reinitiate server.");
       process.exit();
     }
-    console.log(fileList);
     if(path.extname(fileList[fileList.length-1]) == ".png" && fileList[fileList.length-1].substring(0,1) != "."){
       picArray.push(fileList[fileList.length-1]);
+	    console.log("Added picture: " + fileList[fileList.length-1]);
     }
     fileList.pop();
   }
@@ -54,7 +56,7 @@ var server = http.createServer( function(req, res) {
   var ext = path.extname(filename);
   var localPath = __dirname;
   var validExtensions = {
-    ".html" : "text/html",          
+    ".html": "text/html",          
     ".js": "application/javascript", 
     ".php": "application/php",
     ".css": "text/css",
@@ -71,41 +73,33 @@ var server = http.createServer( function(req, res) {
   };
   var isValidExt = validExtensions[ext];
 
-  if(!isValidExt){
-    tempName = filename.substring(0, filename.length - now.getTime().toString().length);
-    var isValidExt = validExtensions[path.extname(tempName)];
-    if(isValidExt){
-      filename = tempName;
-    }
-  }
   if (isValidExt) {
     localPath += filename;
-console.log(filename);
     fs.exists(localPath, function(exists) {
       if(exists) {
         console.log("Serving file: " + localPath);
         getFile(localPath, res, ext); 
       }
       else if(path.extname(filename) === ".rwd"){
-        goArduino();
-        var toSend = "done";
-        res.setHeader("Content-Length", toSend.length);
-        res.setHeader("Content-Type", ext);
-        res.statusCode = 200;
+      	if(cntrl == "arduino"){
+	        goArduino();
+	    }
+        var toSend = "trash.jpg";
         res.end(toSend);
       }
       else if(path.extname(filename) === ".sav"){
+        console.log("Recording trial");
         fs.appendFile(outputFile, parseData(filename), function (err) { if (err){ return console.log(err); } });
+        var toSend = "done";
+        res.end(toSend);
       }
       else if(path.extname(filename) === ".dat"){
         var toSend = [subjectID, random, picArray].toString();
-        res.setHeader("Content-Length", toSend.length);
-        res.setHeader("Content-Type", ext);
-        res.statusCode = 200;
         res.end(toSend);
       }
       else if(path.extname(filename) !== ".sav" && !isNaN(filename.substring(6,7))){
         getFile(pictureFolder +"/" + picArray[parseInt(filename.substring(6,7))], res, ext);
+        console.log("Serving file: " + filename);
       }
       else {
         console.log("File not found: " + localPath);
@@ -113,13 +107,13 @@ console.log(filename);
         res.end();
       }
     }); 
-}
-else {
-  console.log("File not found: " + filename);
-}
-if(needNew){
-  newList();
-}
+  }
+  else {
+    console.log("File not found: " + filename);
+  }
+  if(needNew){
+    newList();
+  }
 }).listen(port, serverUrl);
 
 function parseData(data){
@@ -143,13 +137,13 @@ function getFile(localPath, res, mimeType) {
 }
 
 function usage(){
-  console.log("server_two.js usage:");
-  console.log("node server_two.js [strain_id] [subject_id]");
+  console.log("server.js usage:");
+  console.log("node server.js [strain_id] [subject_id] [fixed/random] [arduino/none]");
   console.log("Starts server for TI task with subject");
 }
 
 function validation(){
-  if(!(args.length == 2 || args.length == 3)){
+  if(!(args.length == 2 || args.length == 3 || args.length == 4)){
     console.log(args.length);
     console.log("Error: incorrect number of parameters");
     usage();
@@ -163,13 +157,21 @@ function validation(){
     console.log("Error: Subject ID is not 8 characters");
     process.exit();
   }
-  else if(args[2] !== undefined && args[2] != "random"){
-    console.log("Third parameter not equal to \'random\'");
+  if(args[2] !== undefined && args[2] != "random" && args[2] != "fixed"){
+    console.log("Third parameter must equal \'fixed\' or \'random\'");
     process.exit();
   }
   else if(args[2] == "random"){
     random = true;
   }
+  if(args[3] !== undefined && args[3] != "none" && args[3] != "arduino"){
+    console.log("Fourth parameter must equal \'none\' or \'arduino\'");
+    process.exit();
+  }
+  else {
+    cntrl = args[3];
+  }
+  
   strainID = args[0];
   console.log("Species Strain ID: " + args[0]);
   subjectID = args[1];
@@ -220,16 +222,18 @@ function shuffle(o){
 };
 
 // johnny-five/Arduino related code follows:
-var j5 = require("johnny-five");
-var board = new j5.Board();
-var LEDPIN = 13;
-var OUTPUT = 1;
-var val = 0;
-var pulseDuration = 150;
-board.on("ready", function(){
-  // Set pin 13 to OUTPUT mode
-  this.pinMode(LEDPIN, OUTPUT);
-});
+if(cntrl == "arduino"){
+	var j5 = require("johnny-five");
+	var board = new j5.Board();
+	var LEDPIN = 13;
+	var OUTPUT = 1;
+	var val = 0;
+	var pulseDuration = 150;
+	board.on("ready", function(){
+	  // Set pin 13 to OUTPUT mode
+	  this.pinMode(LEDPIN, OUTPUT);
+	});
+}
 
 function goArduino(){
   if(board){
