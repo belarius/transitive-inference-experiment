@@ -14,8 +14,8 @@ var random = false;
 var cntrl = "none";
 var strainID, subjectID, picArray, needNew;
 validation();
-var outputFile;
 var folder = "trialData";
+var outputFile = folder + "/" + strainID + "-" + subjectID + "-" + makeDate() + ".csv";
 var pictureFolder = "./pics"; // hardcoded destination for the data files
 console.log("Randomization: " + random);
 console.log("Starting web server at " + serverUrl + ":" + port);
@@ -24,24 +24,9 @@ if(random){
   fileList = shuffle(fileList);
 }
 
-function newList(){
-  picArray = Array();
-  outputFile = folder + "/" + strainID + "-" + subjectID + "-" + makeDate() + ".csv"
-  while(picArray.length < 5){
-    if(fileList.length == 0){
-      console.log("Picture file exhausted. Reinitiate server.");
-      process.exit();
-    }
-    if(path.extname(fileList[fileList.length-1]) == ".png" && fileList[fileList.length-1].substring(0,1) != "."){
-      picArray.push(fileList[fileList.length-1]);
-	    console.log("Added picture: " + fileList[fileList.length-1]);
-    }
-    fileList.pop();
-  }
-  picArray.reverse();
-}
+var ImageBank = new ImageList();
+ImageBank.getPicsFromFile(fileList);
 
-newList();
 fs.writeFile(outputFile, dataHeader, function (err) {
   if (err){
     return console.log(err);
@@ -95,6 +80,9 @@ var server = http.createServer( function(req, res) {
         res.end(toSend);
       }
       else if(path.extname(filename) === ".dat"){
+        console.log(filename)
+        picArray = ImageBank.requestList(Number(filename.substring(9,13)),Number(filename.substring(6,8)),Number(filename.substring(1,5)));
+        console.log("Serving list " + Number(filename.substring(9,13)) + ", of length " + Number(filename.substring(6,8)) + " and type " + Number(filename.substring(1,5)));
         var toSend = [subjectID, random, picArray].toString();
         res.end(toSend);
       }
@@ -233,7 +221,7 @@ if(cntrl == "arduino"){
 	var LEDPIN = 13;
 	var OUTPUT = 1;
 	var val = 0;
-	var pulseDuration = 150;
+	var pulseDuration = 200;
 	board.on("ready", function(){
 	  // Set pin 13 to OUTPUT mode
 	  this.pinMode(LEDPIN, OUTPUT);
@@ -246,3 +234,46 @@ function goArduino(){
     setTimeout(function(){board.digitalWrite(LEDPIN, 0)}, pulseDuration);
   }
 }
+
+function zeroPad(num, places) {
+  var zero = places - num.toString().length + 1;
+  return Array(+(zero > 0 && zero)).join("0") + num;
+}
+
+// ImageList Object
+function ImageList(){
+  var IL_list_id     = Array();
+  var IL_list_files  = Array();
+  var IL_list_length = Array();
+  var IL_list_type   = Array();
+  var count = 0;  
+  
+  this.getPicsFromFile = function(fileList){
+    var IL_picArray    = Array();
+    while(fileList.length > 0){
+      if(path.extname(fileList[0]) == ".png" && fileList[0].substring(0,1) != "."){
+        IL_picArray.push(fileList[0]);
+      }
+      fileList.shift();
+    }
+    while(IL_picArray.length > 0) {
+      IL_list_id.push(IL_picArray[0].substr(0, 12));
+      IL_list_length.push(Number(IL_picArray[0].substr(5, 2)));
+      IL_list_type.push(Number(IL_picArray[0].substr(0, 4)));
+      IL_list_files.push(Array());
+      while( (IL_picArray.length > 0) && (IL_list_id[IL_list_id.length-1] === IL_picArray[0].substr(0, 12))){
+        IL_list_files[IL_list_files.length-1].push(IL_picArray[0]);
+        IL_picArray.shift();
+      }
+    }
+  }
+  
+  this.requestList = function(rq_list,rq_len,rq_type){
+    search_id = zeroPad(rq_type,4) + "-" + zeroPad(rq_len,2) + "-" + zeroPad(rq_list,4);
+    search_result = IL_list_id.indexOf(search_id);
+    return IL_list_files[search_result];
+  }
+
+}
+
+

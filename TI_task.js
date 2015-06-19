@@ -43,9 +43,26 @@ var interTrialTimer = 0;
 // ====TASK INITIALIZATION====
 // ===========================
 
+// ====Get Info====
+var listRequest = prompt("Type, Length, ListID : ", "0, 5, 1");
+if(listRequest == null){
+  var spl = "0, 5, 1".split(',');
+} else {
+  var spl = listRequest.split(',');
+  if(spl.length===1){
+    spl.push(5);
+  }
+  if(spl.length===2){
+    spl.push(1);
+  }
+}
+listLength = spl[1];
+listRequest = zeroPad(Number(spl[0]),4) + "-" + zeroPad(Number(spl[1]),2) + "-" + zeroPad(Number(spl[2]),4);
+console.log(listRequest);
+
 // ====Server Query===
 var dataHttp = new XMLHttpRequest();
-dataHttp.open("POST", "info.dat", false);
+dataHttp.open("POST", listRequest + ".dat", false);
 dataHttp.send();
 dataList = dataHttp.responseText.split(",");
 // Assign subject ID
@@ -288,6 +305,11 @@ function shuffle(o){
     for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
+
+function zeroPad(num, places) {
+  var zero = places - num.toString().length + 1;
+  return Array(+(zero > 0 && zero)).join("0") + num;
+}
 
 function printToServer(trial_id){
   // Passes information from a single trial to the server
