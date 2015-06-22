@@ -139,6 +139,7 @@ function createTrialStarter(){
     endAndStartTimer(interTrialTimer, 300, function(){document.body.appendChild(orientImg)});
     orientImg.addEventListener('touchstart', function(e){ resetVars(true); });
     orientImg.addEventListener('mousedown', function(e){ resetVars(true); });
+    orientImg.addEventListener('onselect', function(){ clearSelection() });
     return orientImg;
   }
 }
@@ -204,6 +205,7 @@ function createStimulus(image_object, relX, relY){
   // once image is clicked, experiment result is recorded and next trial starts
   stimulus.addEventListener('touchstart', function(e){ stimTouched(e, image_object, true) });
   stimulus.addEventListener('mousedown', function(e){ stimTouched(e, image_object, false) });
+  stimulus.addEventListener('onselect', function(){ clearSelection() });
   return stimulus;
 }
 
@@ -230,6 +232,7 @@ function giveResult(image, action_taken){
     interImg.style.left = (Math.floor(w/2) - Math.floor(0.5*interImg.width)) + "px";
     interImg.style.top = (Math.floor(h/2) - Math.floor(0.5*interImg.height)) + "px";
     interImg.style.position = "absolute";
+    interImg.addEventListener('onselect', function(){ clearSelection() });
     if(image.correct){
       // if participant selects correct image
       trial_result[current_trial] = "1";
@@ -270,11 +273,6 @@ function giveResult(image, action_taken){
 
 // ====Operational Functions====
 
-function endAndStartTimer(id, interval, fun){
-  window.clearTimeout(id)
-  id = window.setTimeout(fun, interval)
-}
-
 function checkClicked(source){
   var selection = document.getElementsByTagName('img');
   if(selection.length > 1 && (selection[0].src == source || selection[1].src == source)){
@@ -282,6 +280,20 @@ function checkClicked(source){
       selection[0].click();
     }
   }
+}
+
+function clearSelection() {
+    var elem = document.getElementsByTagName('img');
+    setTimeout(function() {
+               elem.selectionStart=0;
+                elem.selectionEnd=0;
+                }, 0);
+    elem.value = prevoiusValue.substring(0,2);
+}
+
+function endAndStartTimer(id, interval, fun){
+  window.clearTimeout(id)
+  id = window.setTimeout(fun, interval)
 }
 
 function getTouchCoords(e, current_trial){
