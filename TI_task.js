@@ -9,6 +9,7 @@
 // ====Task Variables====
 var listLength = 5;
 var blockCount = 100;
+var trialCountCap = 2000;
 var timeoutInterval = 10000;
 var penaltyDelay = 0;
 var delay = 0;
@@ -94,6 +95,10 @@ for(b=0;b<blockCount;b++){
     combination_array.push(temp_array[i]);
   }
 }
+session_length = Math.min(session_length, trialCountCap);
+combination_array.splice(trialCountCap,combination_array.length);
+
+
 
 // ====Initialize Data Variables====
 trial_result = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
