@@ -8,6 +8,8 @@
 
 // ====Task Variables====
 var listLength = 5;
+var listType = 0;
+var listID = 1;
 var blockCount = 100;
 var trialCountCap = 2000;
 var timeoutInterval = 10000;
@@ -19,6 +21,8 @@ var feedback_delay = 700;
 var w = window.innerWidth;
 var h = window.innerHeight;
 var current_trial = -1;
+var dataHttp = new XMLHttpRequest();
+var picture_array = Array();
 
 // ====Data Collection Arrays====
 var trial_number = Array();
@@ -44,77 +48,10 @@ var interTrialTimer = 0;
 // ====TASK INITIALIZATION====
 // ===========================
 
-// ====Get Info====
-var listRequest = prompt("Type, Length, ListID : ", "0, 5, 1");
-if(listRequest == null){
-  var spl = "0, 5, 1".split(',');
-} else {
-  var spl = listRequest.split(',');
-  if(spl.length===1){
-    spl.push(5);
-  }
-  if(spl.length===2){
-    spl.push(1);
-  }
-}
-listLength = spl[1];
-listRequest = zeroPad(Number(spl[0]),4) + "-" + zeroPad(Number(spl[1]),2) + "-" + zeroPad(Number(spl[2]),4);
-console.log(listRequest);
-
-// ====Server Query===
-var dataHttp = new XMLHttpRequest();
-dataHttp.open("POST", listRequest + ".dat", false);
-dataHttp.send();
-dataList = dataHttp.responseText.split(",");
-// Assign subject ID
-subject_id = dataList[0];
-// Assign pictures to list
-var picture_array = Array();
-for(i=0;i<listLength;i++){
-  pth = "pics/" + i + ".jpg";
-  A = {filepath: pth, id: dataList[i+2], rank: i, correct: false};
-  console.log(dataList[i+2])
-  picture_array.push(A);
-}
-
-// ====Trial Structure Setup====
-combination_array = Array();
-for(b=0;b<blockCount;b++){
-  temp_array = Array();
-  for(i=0;i<listLength;i++){
-    for(j=0;j<listLength;j++){
-      if(i != j){
-        session_length = session_length + 1;
-        trial_number.push(session_length.toString());
-        temp_array.push([picture_array[i], picture_array[j]]);
-      }
-    }
-  }
-  shuffle(temp_array);
-  for(i=0;i<temp_array.length;i++){
-    combination_array.push(temp_array[i]);
-  }
-}
-session_length = Math.min(session_length, trialCountCap);
-combination_array.splice(trialCountCap,combination_array.length);
-
-
-
-// ====Initialize Data Variables====
-trial_result = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
-stim_time = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
-result_time = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
-result_x = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
-result_y = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
-trial_timeouts = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"0");
-timeout_time = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"0");
-interTrial_timeouts = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"0");
-id_array = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,subject_id);
-
-console.log(session_length + " trials");
+overlay()
 
 // ====Begin Task====
-createTrialStarter()
+// Session is started by overlay object in the HTML file.
 
 
 // =================
@@ -122,6 +59,67 @@ createTrialStarter()
 // =================
 
 // ====Task Functions====
+
+function sessionStarter(){
+  // ====Get Info From HTML Form====
+  listLength = Number(document.getElementById("list_length").value);
+  listID = Number(document.getElementById("list_ID").value);
+  listType = Number(document.getElementById("list_type").value);
+  trialCountCap = Number(document.getElementById("trial_num").value);
+
+  // ====Server Query===
+  listRequest = zeroPad(Number(listType),4) + "-" + zeroPad(Number(listLength),2) + "-" + zeroPad(Number(listID),4);
+  console.log(listRequest);
+  dataHttp.open("POST", listRequest + ".dat", false);
+  dataHttp.send();
+  dataList = dataHttp.responseText.split(",");
+  // Assign subject ID
+  subject_id = dataList[0];
+  // Assign pictures to list
+  for(i=0;i<listLength;i++){
+    pth = "pics/" + i + ".jpg";
+    A = {filepath: pth, id: dataList[i+2], rank: i, correct: false};
+    console.log(dataList[i+2])
+    picture_array.push(A);
+  }
+
+  // ====Trial Structure Setup====
+  combination_array = Array();
+  for(b=0;b<blockCount;b++){
+    temp_array = Array();
+    for(i=0;i<listLength;i++){
+      for(j=0;j<listLength;j++){
+        if(i != j){
+          session_length = session_length + 1;
+          trial_number.push(session_length.toString());
+          temp_array.push([picture_array[i], picture_array[j]]);
+        }
+      }
+    }
+    shuffle(temp_array);
+    for(i=0;i<temp_array.length;i++){
+      combination_array.push(temp_array[i]);
+    }
+  }
+  session_length = Math.min(session_length, trialCountCap);
+  combination_array.splice(trialCountCap,combination_array.length);
+
+  // ====Initialize Data Variables====
+  trial_result = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
+  stim_time = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
+  result_time = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
+  result_x = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
+  result_y = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"");
+  trial_timeouts = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"0");
+  timeout_time = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"0");
+  interTrial_timeouts = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,"0");
+  id_array = Array.apply(null, new Array(session_length)).map(String.prototype.valueOf,subject_id);
+  console.log(session_length + " trials");
+
+  // ====Hide Overlay And Begin Session====
+  overlay();
+  createTrialStarter();
+}
 
 function createTrialStarter(){
   current_trial = current_trial + 1;
@@ -318,9 +316,14 @@ function getMouseCoords(e, current_trial){
 //  document.getElementById("XY").innerHTML = cursorX + " , " + cursorY;
 }
 
+function overlay() {
+  el = document.getElementById("overlay");
+  el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+}
+
 function shuffle(o){ 
-    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-    return o;
+  for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  return o;
 };
 
 function zeroPad(num, places) {
