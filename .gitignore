@@ -1,0 +1,9 @@
+# OS files
+.DS_Store
+pics/.DS_Store
+
+# Sessions
+trialData/*.csv
+
+# Stimuli
+pics/*.png
