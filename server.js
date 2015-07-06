@@ -90,7 +90,7 @@ var server = http.createServer( function(req, res) {
         console.log("Serving file: " + localPath);
         getFile(localPath, res, ext); 
       }
-      else if(path.extname(filename) !== ".sav" && !isNaN(filename.substring(6,7))){
+      else if(!isNaN(filename.substring(6,7))){
         getFile(pictureFolder +"/" + picArray[parseInt(filename.substring(6,7))], res, ext);
         console.log("Serving file: " + filename);
       }
