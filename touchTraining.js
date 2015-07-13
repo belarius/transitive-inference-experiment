@@ -117,15 +117,15 @@ function giveResult(image, action_taken){
       window.setTimeout(function(){
         dataHttp.open("GET", Math.random() + ".rwd", true);
         dataHttp.send();
-      }, 0);
+      }, 500);
       window.setTimeout(function(){
         dataHttp.open("GET", Math.random() + ".rwd", true);
         dataHttp.send();
-      }, 300);
+      }, 800);
             window.setTimeout(function(){
         dataHttp.open("GET", Math.random() + ".rwd", true);
         dataHttp.send();
-      }, 600);
+      }, 1100);
      
 	  var confirmed = dataHttp.responseText;
     }

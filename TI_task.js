@@ -242,8 +242,10 @@ function giveResult(image, action_taken){
       console.log("Correct");
       delay = 0;
       interImg.src = "pics/check.spc";// + new Date().getTime();
-      dataHttp.open("GET", Math.random() + ".rwd", true);
-      dataHttp.send();
+      window.setTimeout(function(){
+        dataHttp.open("GET", Math.random() + ".rwd", true);
+        dataHttp.send();
+      }, 500);
 	  var confirmed = dataHttp.responseText;
     }
     // incorrect image
