@@ -15,7 +15,8 @@ var trialCountCap = 2000;
 var timeoutInterval = 10000;
 var penaltyDelay = 0;
 var delay = 0;
-var feedback_delay = 700;
+var feedback_delay = 500;
+var pulseNumber = 1;
 
 // ====Operational Variables====
 var w = window.innerWidth;
@@ -23,6 +24,7 @@ var h = window.innerHeight;
 var current_trial = -1;
 var dataHttp = new XMLHttpRequest();
 var picture_array = Array();
+var delay_array = Array();
 
 // ====Data Collection Arrays====
 var trial_number = Array();
@@ -66,6 +68,7 @@ function sessionStarter(){
   listID = Number(document.getElementById("list_ID").value);
   listType = Number(document.getElementById("list_type").value);
   trialCountCap = Number(document.getElementById("trial_num").value);
+  pulseNumber = Number(document.getElementById("pulse_num").value);
 
   // ====Server Query===
   listRequest = zeroPad(Number(listType),4) + "-" + zeroPad(Number(listLength),2) + "-" + zeroPad(Number(listID),4);
@@ -81,6 +84,11 @@ function sessionStarter(){
     A = {filepath: pth, id: dataList[i+2], rank: i, correct: false};
     console.log(dataList[i+2])
     picture_array.push(A);
+  }
+
+  // ====Configure Delay Array====
+  for(i=0;i<pulseNumber;i++){
+    delay_array.push(feedback_delay + i*300);
   }
 
   // ====Trial Structure Setup====
@@ -242,11 +250,18 @@ function giveResult(image, action_taken){
       console.log("Correct");
       delay = 0;
       interImg.src = "pics/check.spc";// + new Date().getTime();
-      window.setTimeout(function(){
-        dataHttp.open("GET", Math.random() + ".rwd", true);
-        dataHttp.send();
-      }, 500);
+
+
+      for(i=0;i<delay_array.length;i++){
+        window.setTimeout(function(){
+          dataHttp.open("GET", Math.random() + ".rwd", true);
+          dataHttp.send();
+        }, delay_array[i]);
+      }
 	  var confirmed = dataHttp.responseText;
+
+
+
     }
     // incorrect image
     else {
