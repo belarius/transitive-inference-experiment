@@ -81,8 +81,16 @@ var server = http.createServer( function(req, res) {
       }
       else if(path.extname(filename) === ".dat"){
         console.log(filename)
-        picArray = ImageBank.requestList(Number(filename.substring(9,13)),Number(filename.substring(6,8)),Number(filename.substring(1,5)));
-        console.log("Serving list " + Number(filename.substring(9,13)) + ", of length " + Number(filename.substring(6,8)) + " and type " + Number(filename.substring(1,5)));
+        picArray = Array();
+        filename = filename.split(",");
+        for(i=0;i<filename.length;i++){
+          console.log(filename[i])
+          tempPicArray = ImageBank.requestList(Number(filename[i].substring(9,13)),Number(filename[i].substring(6,8)),Number(filename[i].substring(1,5)));
+          console.log("Serving list " + Number(filename[i].substring(9,13)) + ", of length " + Number(filename[i].substring(6,8)) + " and type " + Number(filename[i].substring(1,5)));
+          for(j=0;j<tempPicArray.length;j++){
+            picArray.push(tempPicArray[j]);
+          }
+        }
         var toSend = [subjectID, random, picArray].toString();
         res.end(toSend);
       }
@@ -91,7 +99,7 @@ var server = http.createServer( function(req, res) {
         getFile(localPath, res, ext); 
       }
       else if(!isNaN(filename.substring(6,7))){
-        getFile(pictureFolder +"/" + picArray[parseInt(filename.substring(6,7))], res, ext);
+        getFile(pictureFolder +"/" + picArray[parseInt(filename.substring(6,filename.length-4))], res, ext);
         console.log("Serving file: " + filename);
       }
       else {
@@ -249,7 +257,8 @@ function ImageList(){
   var count = 0;  
   
   this.getPicsFromFile = function(fileList){
-    var IL_picArray    = Array();
+	console.log(fileList)
+    var IL_picArray  = Array();
     while(fileList.length > 0){
       if(path.extname(fileList[0]) == ".png" && fileList[0].substring(0,1) != "."){
         IL_picArray.push(fileList[0]);
