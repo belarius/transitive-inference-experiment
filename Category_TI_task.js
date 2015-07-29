@@ -86,6 +86,12 @@ function sessionStarter(){
   dataHttp.open("POST", listRequest + ".dat", false);
   dataHttp.send();
   dataList = dataHttp.responseText.split(",");
+  // Set data file header
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("GET", "subject_id,trial,correct_response,stim_time,response_time,x_coord,y_coord,trial_timeout,timeout_time,interTrial_timeout,left_rank,right_rank,distance,joint_rank,left_image,right_image;.hed" ,true);
+  xmlhttp.send();
+  var confirmed = xmlhttp.responseText;
+
   // Assign subject ID
   subject_id = dataList[0];
   // Assign pictures to list
@@ -177,9 +183,9 @@ function createTrialStarter(){
 function resetVars(newTrialBool){
   // clears html document of image objects
   var selection = document.getElementsByTagName('img');
-  for(i=0;i <= selection.length;i++){
+  do {
     selection[0].parentNode.removeChild(selection[0]);
-  }
+  } while (selection.length > 0);
   for(i=0;i<listLength;i++){
     picture_array[i].correct = false;
     picture_array[i].class = "unclicked";

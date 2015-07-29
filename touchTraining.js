@@ -47,9 +47,9 @@ newTrial();
 function resetVars(newTrialBool){
   // clears html document of image objects
   var selection = document.getElementsByTagName('img');
-  for(i=0;i <= selection.length;i++){
+  do {
     selection[0].parentNode.removeChild(selection[0]);
-  }
+  } while (selection.length > 0);
   clearTimeout(responseTimer);
   clearTimeout(penaltyTimer);
   clearTimeout(rewardDeliveryTimer);

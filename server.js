@@ -2,7 +2,6 @@
 // server-side
 // Brendon Villalobos
 
-var dataHeader = "subject_id,trial,correct_response,stim_time,response_time,x_coord,y_coord,trial_timeout,timeout_time,interTrial_timeout,left_rank,right_rank,distance,joint_rank,left_image,right_image\n";
 var port = 8000;
 var serverUrl = "127.0.0.1"; 
 var app = require('express');
@@ -27,14 +26,6 @@ if(random){
 var ImageBank = new ImageList();
 ImageBank.getPicsFromFile(fileList);
 
-fs.writeFile(outputFile, dataHeader, function (err) {
-  if (err){
-    return console.log(err);
-  } else{
-    console.log("Creating data file");
-  }
-});
-
 var server = http.createServer( function(req, res) {
   var now = new Date();
   var filename = req.url || "index.html";
@@ -46,12 +37,13 @@ var server = http.createServer( function(req, res) {
     ".php": "application/php",
     ".css": "text/css",
     ".txt": "text/plain",
+    ".sav": "text/sav",
+    ".dat": "text/data",
+    ".hed": "text/header",
     ".jpg": "image/jpeg",
     ".gif": "image/gif",
     ".png": "image/png",
     ".ico": "image/ico",
-    ".sav": "text/sav",
-    ".dat": "text/data",
     ".spc": "image/special",
     ".wav": "sound",
     ".ogg": "sound",
@@ -71,6 +63,12 @@ var server = http.createServer( function(req, res) {
 	        goArduino();
 	    }
         var toSend = "trash.jpg";
+        res.end(toSend);
+      }
+      else if(path.extname(filename) === ".hed"){
+        console.log("Creating data file");
+        fs.appendFile(outputFile, parseData(filename), function (err) { if (err){ return console.log(err); } });
+        var toSend = "done";
         res.end(toSend);
       }
       else if(path.extname(filename) === ".sav"){
