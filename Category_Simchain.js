@@ -98,8 +98,16 @@ function sessionStarter(){
   for(i=0;i<dataList.length-2;i++){
     pth = "pics/" + i + ".jpg";
     lid = dataList[i+2];
-    A = {filepath: pth, id: lid, rank: categoryOrder[Number(lid.substring(0,4))-1], correct: false};
-    picture_array.push(A);
+    pos = -1;
+    for(j=0;j<categoryOrder.length;j++){
+      if(Number(lid.substring(0,4)) == categoryOrder[j]){
+        pos = j;
+      }
+    }
+    if(pos >= 0){
+	  A = {filepath: pth, id: lid, rank: pos+1, correct: false};
+	  picture_array.push(A);
+	}
   }
 console.log(picture_array.length + " images loaded.")
 
@@ -117,7 +125,7 @@ console.log(picture_array.length + " images loaded.")
       var rand_s = 0;
       do {
         rand_s = picture_array[Math.floor(Math.random() * picture_array.length)];
-      } while (!(rand_s.rank == categoryOrder[s]));
+      } while (!(rand_s.rank == s+1));
       temp_array.push(rand_s);
     }
     shuffle(temp_array);
