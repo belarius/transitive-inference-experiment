@@ -7,7 +7,7 @@
 // ============================
 
 // ====Task Variables====
-var century = 2;
+var century = 4;
 var listLength = 5;
 var listType = 0;
 var blockCount = 100;
@@ -236,13 +236,13 @@ function createStimulus(image_object, relX, relY){
   stim_time[current_trial] = new Date().getTime();
   var creation_time = new Date().getTime();
   // once image is clicked, experiment result is recorded and next trial starts
-  stimulus.addEventListener('touchstart', function(e){ stimTouched(e, image_object, true) });
-  stimulus.addEventListener('mousedown', function(e){ stimTouched(e, image_object, false) });
+  stimulus.addEventListener('touchstart', function(e){ stimTouched(e, image_object, true, [stimulus.style.left, stimulus.style.top]) });
+  stimulus.addEventListener('mousedown', function(e){ stimTouched(e, image_object, false, [stimulus.style.left, stimulus.style.top]) });
   stimulus.addEventListener('onselect', function(){ clearSelection() });
   return stimulus;
 }
 
-function stimTouched(e, image_object, is_touch){
+function stimTouched(e, image_object, is_touch, frame_style){
   if(is_touch){
     getTouchCoords(e, current_trial);
   } else {
@@ -251,11 +251,11 @@ function stimTouched(e, image_object, is_touch){
   var event_time = new Date().getTime();
   result_time[current_trial] = event_time;
   image_object.class = "clicked";
-  giveResult(image_object, true);
+  giveResult(image_object, true, frame_style);
   clearTimeout(responseTimer);
 }
 
-function giveResult(image, action_taken){
+function giveResult(image, action_taken, frame_style){
   // records experiment, instigates new trial
   var stimulus = document.getElementById(image.id);
   if(action_taken){
@@ -311,8 +311,20 @@ function giveResult(image, action_taken){
         });
       });
     } else {
+      interImg.width = 350;
+      interImg.height = 350;
+      interImg.style.left = frame_style[0];
+      interImg.style.top = frame_style[1];
+      interImg.style.position = "absolute";
+      interImg.id = "stim_frame";
+      interImg.src = "pics/white-frame.spc";// + new Date().getTime();
       trial_result[current_trial] = "-";
       printToServer(current_trial);
+      document.body.appendChild(interImg);
+      setTimeout(function(){
+        var item = document.getElementById("stim_frame");
+        item.parentNode.removeChild(item);
+      }, 250);
     }
   }
   else{
