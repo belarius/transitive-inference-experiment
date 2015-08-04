@@ -69,6 +69,7 @@ function sessionStarter(){
   listType = Number(document.getElementById("list_type").value);
   trialCountCap = Number(document.getElementById("trial_num").value);
   pulseNumber = Number(document.getElementById("pulse_num").value);
+  penaltyDelay = Number(document.getElementById("incorr_delay").value)*1000;
   categoryOrder = document.getElementById("cat_order").value;
   categoryOrder = categoryOrder.split(",");
 

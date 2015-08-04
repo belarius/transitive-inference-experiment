@@ -69,6 +69,7 @@ function sessionStarter(){
   listType = Number(document.getElementById("list_type").value);
   trialCountCap = Number(document.getElementById("trial_num").value);
   pulseNumber = Number(document.getElementById("pulse_num").value);
+  penaltyDelay = Number(document.getElementById("incorr_delay").value)*1000;
 
   // ====Server Query===
   listRequest = zeroPad(Number(listType),4) + "-" + zeroPad(Number(listLength),2) + "-" + zeroPad(Number(listID),4);
