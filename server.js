@@ -227,7 +227,7 @@ if(cntrl == "arduino"){
 	var LEDPIN = 13;
 	var OUTPUT = 1;
 	var val = 0;
-	var pulseDuration = 200;
+	var pulseDuration = 350;
 	board.on("ready", function(){
 	  // Set pin 13 to OUTPUT mode
 	  this.pinMode(LEDPIN, OUTPUT);

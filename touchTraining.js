@@ -121,11 +121,11 @@ function giveResult(image, action_taken){
       window.setTimeout(function(){
         dataHttp.open("GET", Math.random() + ".rwd", true);
         dataHttp.send();
-      }, 800);
+      }, 900);
             window.setTimeout(function(){
         dataHttp.open("GET", Math.random() + ".rwd", true);
         dataHttp.send();
-      }, 1100);
+      }, 1300);
      
 	  var confirmed = dataHttp.responseText;
     }

@@ -90,7 +90,7 @@ function sessionStarter(){
 
   // ====Configure Delay Array====
   for(i=0;i<pulseNumber;i++){
-    delay_array.push(feedback_delay + i*300);
+    delay_array.push(feedback_delay + i*450);
   }
 
   // ====Trial Structure Setup====
