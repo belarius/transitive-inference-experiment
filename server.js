@@ -12,7 +12,9 @@ var args = process.argv.slice(2);
 var random = false;
 var cntrl = "none";
 var strainID, subjectID, picArray, needNew;
+
 validation();
+
 var folder = "trialData";
 var outputFile = folder + "/" + strainID + "-" + subjectID + "-" + makeDate() + ".csv";
 var pictureFolder = "./pics"; // hardcoded destination for the data files
@@ -227,7 +229,7 @@ if(cntrl == "arduino"){
 	var LEDPIN = 13;
 	var OUTPUT = 1;
 	var val = 0;
-	var pulseDuration = 350;
+	var pulseDuration = 250;
 	board.on("ready", function(){
 	  // Set pin 13 to OUTPUT mode
 	  this.pinMode(LEDPIN, OUTPUT);
