@@ -15,7 +15,7 @@ var timeoutInterval = 10000;
 var penaltyDelay = 0;
 var delay = 0;
 var feedback_delay = 500;
-var pulseNumber = 1;
+var pulseNumber = 3;
 
 // ====Operational Variables====
 var w = window.innerWidth;
@@ -90,7 +90,7 @@ function sessionStarter(){
 
   // ====Configure Delay Array====
   for(i=0;i<pulseNumber;i++){
-    delay_array.push(feedback_delay + i*450);
+    delay_array.push(feedback_delay + i*350);
   }
 
   // ====Trial Structure Setup====
