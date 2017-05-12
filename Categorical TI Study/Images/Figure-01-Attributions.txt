@@ -1,0 +1,29 @@
+bird01		https://www.flickr.com/photos/mathiasappel/26576011703/
+bird02		https://www.flickr.com/photos/20435888@N02/32468635820/
+bird03		https://www.flickr.com/photos/pamswatercolors/32825472832/
+bird04		https://www.flickr.com/photos/pamswatercolors/32938995466/
+bird05		https://www.flickr.com/photos/pamswatercolors/32980139905/
+bird06		https://www.flickr.com/photos/pamswatercolors/32136085094/
+bird07		https://www.flickr.com/photos/cogdog/32503696673/
+cat01		https://www.flickr.com/photos/137838239@N08/27578331541/
+cat02		https://www.flickr.com/photos/mathiasappel/15694751682/
+cat03		https://www.flickr.com/photos/henriquev/5519598097/
+cat04		https://www.flickr.com/photos/liveandletliveok/3496723324/
+cat05		https://www.flickr.com/photos/mathiasappel/17953605264/
+cat06		https://www.flickr.com/photos/dcoetzee/3539249174/
+cat07		https://www.flickr.com/photos/magdalena_b/4995933901/
+flower01	https://www.flickr.com/photos/132975952@N07/17189268207/
+flower02	https://www.flickr.com/photos/joejungmann/13770005033/
+flower03	https://www.flickr.com/photos/joejungmann/13770005573/
+flower04	https://www.flickr.com/photos/ioachimphotos/14643303102/
+flower05	https://www.flickr.com/photos/kmsiever/3707886727/
+flower06	https://www.flickr.com/photos/ioachimphotos/14456879399/
+flower07	https://www.flickr.com/photos/kmsiever/3679330879/
+people01	https://www.flickr.com/photos/59703310@N00/9928508753/
+people02	https://www.flickr.com/photos/sara_ferretti/33241021385/
+people03	https://www.flickr.com/photos/usnationalarchives/14193294694/
+people04	https://www.flickr.com/photos/51217537@N00/32972962592/
+people05	https://www.flickr.com/photos/26007143@N05/21781260282/
+people06	https://www.flickr.com/photos/usnationalarchives/8674914887/
+
+
