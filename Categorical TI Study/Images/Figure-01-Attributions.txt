@@ -25,5 +25,10 @@ people03	https://www.flickr.com/photos/usnationalarchives/14193294694/
 people04	https://www.flickr.com/photos/51217537@N00/32972962592/
 people05	https://www.flickr.com/photos/26007143@N05/21781260282/
 people06	https://www.flickr.com/photos/usnationalarchives/8674914887/
-
+hoofstock1	https://www.flickr.com/photos/atoach/11915726704/
+hoofstock2	https://www.flickr.com/photos/shan213/4778587411/
+hoofstock3	https://www.flickr.com/photos/mnsc/1053024318/
+hoofstock4	https://www.flickr.com/photos/27426197@N05/4466192590/
+hoofstock5	https://www.flickr.com/photos/8583790@N04/6605116939/
+hoofstock6	https://www.flickr.com/photos/139223434@N08/31956424974/
 
