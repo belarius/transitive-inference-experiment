@@ -16,6 +16,7 @@ var penaltyDelay = 0;
 var delay = 0;
 var feedback_delay = 500;
 var pulseNumber = 3;
+var listSubLength = listLength/2;
 
 // ====Operational Variables====
 var w = window.innerWidth;
@@ -65,6 +66,8 @@ function sessionStarter(){
   // ====Get Info From HTML Form====
   listID = Number(document.getElementById("list_ID").value);
   listType = Number(document.getElementById("list_type").value);
+  listLength = Number(document.getElementById("list_length").value);
+  listSubLength = listLength/2;
 
   // ====Server Query===
   listRequest = zeroPad(Number(listType),4) + "-" + zeroPad(Number(listLength),2) + "-" + zeroPad(Number(listID),4);
@@ -97,9 +100,9 @@ function sessionStarter(){
   combination_array = Array();
 
   for(g=0;g<2;g++){
-    for(b=0;b<4;b++){
+    for(b=0;b<6;b++){
       temp_array = Array();
-      for(i=0;i<5;i++){
+      for(i=0;i<(listSubLength-1);i++){
         session_length = session_length + 1;
         trial_number.push(session_length.toString());
         temp_array.push([picture_array[i*2 + g], picture_array[(i+1)*2 + g]]);
@@ -115,9 +118,9 @@ function sessionStarter(){
   }
 
   for(g=0;g<2;g++){
-    for(b=0;b<4;b++){
+    for(b=0;b<6;b++){
       temp_array = Array();
-      for(i=0;i<5;i++){
+      for(i=0;i<(listSubLength-1);i++){
         session_length = session_length + 1;
         trial_number.push(session_length.toString());
         temp_array.push([picture_array[i*2 + 1 - g], picture_array[(i+1)*2 + 1 - g]]);
@@ -132,11 +135,24 @@ function sessionStarter(){
     }
   }
 
-  list_order_1 = [0,3,4,7,8,11];
-  for(b=0;b<4;b++){
+  i = 0;
+  var list_order_1 = [];
+  var list_order_2 = [];
+  while (i < listSubLength) {
+    if (i % 2 == 0) {
+      list_order_1.push(i*2);
+      list_order_2.push((i*2)+1);
+    } else {
+      list_order_1.push((i*2)+1);
+      list_order_2.push(i*2);
+    }
+    i += 1;
+  }
+
+  for(b=0;b<8;b++){
     temp_array = Array();
-    for(i=0;i<5;i++){
-      for(j=0;j<5;j++){
+    for(i=0;i<(listSubLength-1);i++){
+      for(j=0;j<(listSubLength-1);j++){
         if(i != j){
           session_length = session_length + 1;
           trial_number.push(session_length.toString());
@@ -150,11 +166,10 @@ function sessionStarter(){
     }
   }
 
-  list_order_2 = [1,2,5,6,9,10];
-  for(b=0;b<4;b++){
+  for(b=0;b<8;b++){
     temp_array = Array();
-    for(i=0;i<5;i++){
-      for(j=0;j<5;j++){
+    for(i=0;i<(listSubLength-1);i++){
+      for(j=0;j<(listSubLength-1);j++){
         if(i != j){
           session_length = session_length + 1;
           trial_number.push(session_length.toString());
