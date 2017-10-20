@@ -7,7 +7,7 @@
 // ============================
 
 // ====Task Variables====
-var century = 2;
+var century = 15;
 var listLength = 5;
 var listType = 0;
 var blockCount = 500;
@@ -75,6 +75,7 @@ function sessionStarter(){
 
   // ====Process Category Order====
   listLength = categoryOrder.length;
+  console.log(listLength);
   console.log(categoryOrder);
   for(i=0;i<listLength;i++){
     for(j=0;j<century;j++){
