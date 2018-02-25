@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+  body {
+    background-color: black;
+    color: white;
+    font: Times;
+    position: fixed;
+
+  }
+
+  img {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+  }
+
+  #overlay {
+    visibility: hidden;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width:100%;
+    height:100%;
+    text-align:right;
+    z-index: 1000;
+  }
+
+  #overlay div {
+    width:650px;
+    margin: 100px auto;
+    background-color: #888;
+    border:1px solid #000;
+    padding:15px;
+    text-align:right;
+  }
+
+</style>
+<body>
+
+<!--
+<p id="debug">Hello!</p>
+-->
+
+<p id="XY"></p>
+
+<audio id="louis">
+  <source src="/TheSongIsEnded.ogg" type="audio/ogg">
+</audio>
+
+<div id="overlay"> <div>
+  <form action="demo_form.asp">
+List ID: <input type="text" name="list_ID" id="list_ID" value="1"><br>
+List Length: <input type="text" name="list_length" id="list_length" value="0"><br>
+List Type: <input type="text" name="list_type" id="list_type" value="0"><br>
+<input type="button" id="theButton" value="Begin Session" onclick="sessionStarter()">
+
+<img id="Type20" src="pics/Type20Sample.spc" style="float:left; margin:50px 0px 10px 10px;" width="300" height="300" onclick="Function20()" />
+<img id="Type21" src="pics/Type21Sample.spc" style="float:left; margin:30px 0px 0px 10px;" width="300" height="300" onclick="Function21()" />
+
+  </form>
+</div> </div>
+
+
+<script>
+function Function20() {
+    document.getElementById("list_length").value = "12";
+    document.getElementById("list_type").value = "20";
+}
+
+function Function21() {
+    document.getElementById("list_length").value = "12";
+    document.getElementById("list_type").value = "21";
+}
+</script>
+
+<script> window.oncontextmenu = function(){return false};</script>
+<script> window.onselect = function(){return false};</script>
+
+<script>
+window.alert("Welcome to the study.\n[Instructions]");
+</script>
+
+
+<script type = "text/javascript" src = "TI_task_derived_twin_lists_for_kids.js"></script>
+
+</body>
