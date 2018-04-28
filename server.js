@@ -1,6 +1,7 @@
-// Transitive Inference Task
-// server-side
-// Brendon Villalobos
+// Serial Learning Tasks
+// server-side code for local virtual server
+// Initial code by Brendon Villalobos (2015)
+// Subsequent code by Greg Jensen (2015-2018)
 
 var port = 8000;
 var serverUrl = "127.0.0.1"; 

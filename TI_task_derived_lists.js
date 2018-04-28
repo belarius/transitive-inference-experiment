@@ -1,6 +1,7 @@
-// Transitive Inference Task for use with Humans and Non-Human Primates
+// Derived Lists Testing Task (Order Maintained)
 // client-side
-// Brendon Villalobos
+// Initial code by Brendon Villalobos (2014-2015)
+// Subsequent code by Greg Jensen (2015-2017)
 
 // ============================
 // ====VARIABLE DECLARATION====

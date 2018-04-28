@@ -1,6 +1,7 @@
 // Touch Training Task for use with Non-Human Primates
 // client-side
-// Brendon Villalobos
+// Initial code by Brendon Villalobos (2014-2015)
+// Subsequent code by Greg Jensen (2015)
 
 // ============================
 // ====VARIABLE DECLARATION====

@@ -1,6 +1,7 @@
-// Transitive Inference Task for use with Humans and Non-Human Primates
+// Transitive Inference Task With Massed Trials Manipulation (Start of Session)
 // client-side
-// Brendon Villalobos
+// Initial code by Brendon Villalobos (2014-2015)
+// Subsequent code by Greg Jensen (2015-2016)
 
 // ============================
 // ====VARIABLE DECLARATION====
