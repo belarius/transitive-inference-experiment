@@ -14,6 +14,8 @@ var random = false;
 var cntrl = "none";
 var strainID, subjectID, picArray, needNew;
 
+var picArray = Array();
+
 validation();
 
 var folder = "trialData";
@@ -72,6 +74,7 @@ var server = http.createServer( function(req, res) {
         console.log("Creating data file");
         fs.appendFile(outputFile, parseData(filename), function (err) { if (err){ return console.log(err); } });
         var toSend = "done";
+        picArray = Array();
         res.end(toSend);
       }
       else if(path.extname(filename) === ".sav"){
@@ -81,8 +84,6 @@ var server = http.createServer( function(req, res) {
         res.end(toSend);
       }
       else if(path.extname(filename) === ".dat"){
-        console.log(filename)
-        picArray = Array();
         filename = filename.split(",");
         for(i=0;i<filename.length;i++){
           console.log(filename[i])
@@ -91,6 +92,7 @@ var server = http.createServer( function(req, res) {
           for(j=0;j<tempPicArray.length;j++){
             picArray.push(tempPicArray[j]);
           }
+          console.log("New Picture Array Length: " + picArray.length);
         }
         var toSend = [subjectID, random, picArray].toString();
         res.end(toSend);
