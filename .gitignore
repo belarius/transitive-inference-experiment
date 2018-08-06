@@ -11,3 +11,4 @@ pics/*.png
 # Node
 
 node_modules/
+package.json
