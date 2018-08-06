@@ -7,3 +7,7 @@ trialData/*.csv
 
 # Stimuli
 pics/*.png
+
+# Node
+
+node_modules/
