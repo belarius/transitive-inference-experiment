@@ -90,6 +90,7 @@ function sessionStarter(){
   xmlhttp.open("GET", "subject_id,trial,correct_response,stim_time,response_time,x_coord,y_coord,trial_timeout,timeout_time,interTrial_timeout,left_rank,right_rank,distance,joint_rank,left_image,right_image;.hed" ,true);
   xmlhttp.send();
   var confirmed = xmlhttp.responseText;
+  sleep(750);
   // ====Configure Delay Array====
   for(i=0;i<pulseNumber;i++){
     delay_array.push(feedback_delay + i*450);
@@ -451,4 +452,13 @@ function printToServer(trial_id){
   xmlhttp.open("GET", print_string + ".sav" ,true);
   xmlhttp.send();
   var confirmed = xmlhttp.responseText;
+}
+
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
 }                                                    

@@ -52,7 +52,8 @@ var server = http.createServer( function(req, res) {
     ".spc": "image/special",
     ".wav": "sound",
     ".ogg": "sound",
-    ".rwd": "reward delivery command"
+    ".rwd": "reward delivery command",
+	".rst": "picture array reset"
   };
   var isValidExt = validExtensions[ext];
 
@@ -63,6 +64,10 @@ var server = http.createServer( function(req, res) {
         console.log("Serving file: " + localPath);
         getFile(localPath, res, ext); 
       }
+      else if(path.extname(filename) === ".rst"){
+        picArray = Array();
+        console.log("Reset Picture Array Length: " + picArray.length);
+      }
       else if(path.extname(filename) === ".rwd"){
       	if(cntrl == "arduino"){
 	        goArduino();
@@ -71,10 +76,11 @@ var server = http.createServer( function(req, res) {
         res.end(toSend);
       }
       else if(path.extname(filename) === ".hed"){
+        picArray = Array();
+        console.log("Reset Picture Array Length: " + picArray.length);
         console.log("Creating data file");
         fs.appendFile(outputFile, parseData(filename), function (err) { if (err){ return console.log(err); } });
         var toSend = "done";
-        picArray = Array();
         res.end(toSend);
       }
       else if(path.extname(filename) === ".sav"){
@@ -84,6 +90,7 @@ var server = http.createServer( function(req, res) {
         res.end(toSend);
       }
       else if(path.extname(filename) === ".dat"){
+        console.log(filename)
         filename = filename.split(",");
         for(i=0;i<filename.length;i++){
           console.log(filename[i])
@@ -92,7 +99,7 @@ var server = http.createServer( function(req, res) {
           for(j=0;j<tempPicArray.length;j++){
             picArray.push(tempPicArray[j]);
           }
-          console.log("New Picture Array Length: " + picArray.length);
+		  console.log("New Picture Array Length: " + picArray.length);
         }
         var toSend = [subjectID, random, picArray].toString();
         res.end(toSend);
@@ -287,5 +294,4 @@ function ImageList(){
   }
 
 }
-
 

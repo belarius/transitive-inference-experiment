@@ -73,18 +73,23 @@ function sessionStarter(){
   listLength = Number(document.getElementById("list_length").value);
   listSubLength = listLength/2;
 
+  // Set data file header
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("GET", "subject_id,trial,correct_response,stim_time,response_time,x_coord,y_coord,trial_timeout,timeout_time,interTrial_timeout,left_rank,right_rank,distance,joint_rank,left_image,right_image;.hed" ,true);
+  xmlhttp.send();
+  var confirmed = xmlhttp.responseText;
+  sleep(750);
+  // ====Configure Delay Array====
+  for(i=0;i<pulseNumber;i++){
+    delay_array.push(feedback_delay + i*450);
+  }
+
   // ====Server Query===
   listRequest = zeroPad(Number(listType),4) + "-" + zeroPad(Number(listLength),2) + "-" + zeroPad(Number(listID),4);
   console.log(listRequest);
   dataHttp.open("POST", listRequest + ".dat", false);
   dataHttp.send();
   dataList = dataHttp.responseText.split(",");
-  // Set data file header
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", "subject_id,trial,correct_response,stim_time,response_time,x_coord,y_coord,trial_timeout,timeout_time,interTrial_timeout,left_rank,right_rank,distance,joint_rank,left_image,right_image;.hed" ,true);
-  xmlhttp.send();
-  var confirmed = xmlhttp.responseText;
-
   // Assign subject ID
   subject_id = dataList[0];
   // Assign pictures to list
@@ -93,11 +98,6 @@ function sessionStarter(){
     A = {filepath: pth, id: dataList[i+2], rank: Math.floor(i/2), correct: false};
     console.log(dataList[i+2] + "    " + A.rank)
     picture_array.push(A);
-  }
-
-  // ====Configure Delay Array====
-  for(i=0;i<pulseNumber;i++){
-    delay_array.push(feedback_delay + i*350);
   }
 
   // ====Trial Structure Setup====
@@ -546,4 +546,13 @@ function printToServer(trial_id){
   xmlhttp.open("GET", print_string + ".sav" ,true);
   xmlhttp.send();
   var confirmed = xmlhttp.responseText;
-}                                                    
+}
+
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
